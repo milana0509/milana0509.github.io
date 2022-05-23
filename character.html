@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+        canvas {
+            border: 1px solid #d3d3d3;
+            background-color: #f1f1f1;
+        }
+        </style>
+         <style>
+            .GFG {
+                background-color: white;
+                border: 2px solid black;
+                color: green;
+                padding: 5px 10px;
+                text-align: center;
+                display: inline-block;
+                font-size: 20px;
+                margin: 10px 30px;
+                cursor: pointer;
+            }
+        </style>
+        </head>
+        <body onload="startGame()">
+        <script>
+        
+        function startGame() {
+            myGameArea.start();
+            }
+        
+        var myGameArea = {
+            canvas : document.createElement("canvas"),
+            start : function() {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            }
+        }
+        
+        </script>
+        
+        <p>Now that you choose your character lets start the game!</p>
+        
+        <button id="PlayButton" class="GFG"> Play </button>
+
+        <script type="text/javascript">
+            document.getElementById("PlayButton").onclick = function () {
+                location.href = "game.html";
+            };
+          </script>
+
+        </body>
+</html>

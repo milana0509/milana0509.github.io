@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>2d_game</title>
+
+      <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+
+    </head>
+
+    <style>
+      html, body {
+             overflow: auto;
+             width   : 100%;
+              height  : 100%;
+             margin  : 0;
+             padding : 0;
+            }
+    </style>
+
+   <body>
+
+    <div id = "holder">
+      <script>
+
+        var config = {
+          type: Phaser.AUTO,
+          width: 800,
+          height: 700,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 300 }
+                }
+            },
+            scene: {
+            preload: preload,
+            create: create
+        }
+        };
+    
+        var game = new Phaser.Game(config);
+        var platforms;
+        var cursors;
+        var player;
+    
+        //game.stage.backgroundColor = '#97dffc';
+    
+        function preload () {
+          
+            this.load.setBaseURL('http://labs.phaser.io');
+    
+            this.load.image('sky', 'assets/skies/clouds.png');
+    
+            this.load.image('block', 'assets/sprites/block.png'); //ground
+
+            this.load.image('platform', '/src/games/firstgame/assets/platform.png'); //platform
+    
+            this.load.image('player', '/assets/sprites/	phaser-dude.png', { frameWidth: 42, frameHeight: 58 }); //player icon
+    
+            this.load.image('monster', '/assets/sprites/slime.png'); //monster
+
+        }
+    
+        function create () {
+          
+            this.add.image(400, 400, 'sky'); //background
+    
+            platforms = this.physics.add.staticGroup(); //add platforms
+    
+            platforms.create(400, 720, 'platform').setScale(6).refreshBody();
+            platforms.create(50, 450, 'platform');
+            platforms.create(550, 520, 'platform');
+
+            //const group = this.make.group({ key: 'block', frameQuantity: 12 }); //blocks
+            //Phaser.Actions.SetXY(group.getChildren(), 48, 700, 64, 0); //left, down/up, right, diagonal
+
+            player = this.physics.add.sprite(120, 50, 'player'); //create player
+            //cursors = this.input.keyboard.createCursorKeys(); //create cursorfor movement
+    
+            monster = this.physics.add.sprite(510, 300, 'monster'); //monster
+    
+           player.setCollideWorldBounds(true);
+           player.body.setGravityY(300) 
+    
+          monster.body.setGravityY(800) // falling (speed)
+          monster.setCollideWorldBounds(true);//on the ground
+    
+          this.physics.add.collider(player, platforms); //lend on platform
+          this.physics.add.collider(monster, platforms); //lend on block
+
+          //players movement
+
+          this.cursors = this.input.keyboard.addKeys('LEFT,RIGHT');
+      }
+
+      function update (){
+        //players movement
+        if (this.cursors.LEFT.isDown) {  
+            this.player.body.setVelocityX(-160);
+            this.player.anims.play('left', true);
+          }
+        else if (this.cursors.RIGHT.isDown) {
+            this.player.body.setVelocityX(160);
+            this.player.anims.play('right', true);
+        }
+        else {
+            this.player.body.setVelocityX(0);
+            this.player.anims.play('idle', true);
+        }
+    }
+        
+        </script>
+
+    </script>
+    </div>
+
+    <div id = "chat">
+      <h2>Chat</h2>
+
+      <pre id="messages"></pre>
+        <input type="text" id="messageBox" placeholder="Type your message here"  />
+        <button id="send" title="Send Message!">Send Message</button>
+
+          <script>
+            (function() {
+              const sendBtn = document.querySelector('#send');
+              const messages = document.querySelector('#messages');
+              const messageBox = document.querySelector('#messageBox');
+          
+              let ws;
+          
+              function showMessage(message) {
+                messages.textContent += `\n\n${message}`;
+                messages.scrollTop = messages.scrollHeight;
+                messageBox.value = '';
+              }
+          
+              function init() {
+                if (ws) {
+                  ws.onerror = ws.onopen = ws.onclose = null;
+                  ws.close();
+                }
+          
+                ws = new WebSocket('ws://localhost:9090');
+                ws.onopen = () => {
+                  console.log('Connection opened!');
+                }
+                ws.onmessage = ({ data }) => showMessage(data);
+                ws.onclose = function() {
+                  ws = null;
+                }
+              }
+          
+              sendBtn.onclick = function() {
+                if (!ws) {
+                  showMessage("No WebSocket connection :(");
+                  return ;
+                }
+          
+                ws.send(messageBox.value);
+                showMessage(messageBox.value);
+              }
+          
+              init();
+            })();
+
+            
+          </script>
+          
+  </div>
+
+   </body>
+
+</html>
